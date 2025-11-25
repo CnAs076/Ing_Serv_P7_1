@@ -8,6 +8,11 @@ import androidx.core.view.WindowInsetsCompat
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
+import org.json.JSONObject
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
 
 
 class MainActivity : AppCompatActivity() {
@@ -49,6 +54,24 @@ class MainActivity : AppCompatActivity() {
     fun onClickToEuros(view: View) {
         Toast.makeText(this, "Conversión a euros", Toast.LENGTH_SHORT).show()
         convert(editTextDollars, editTextEuros, 1 / euroToDollar)
+    }
+
+    private fun fetchExchangeRate() {
+        val url = URL("https://api.frankfurter.app/latest?from=EUR&to=USD")
+        val connection = url.openConnection() as HttpURLConnection
+        connection.requestMethod = "GET"
+        val inputStream = connection.inputStream
+        val reader = BufferedReader(InputStreamReader(inputStream))
+        val response = StringBuilder()
+        var line: String?
+        while (reader.readLine().also { line = it } != null) {
+            response.append(line)
+        }
+        reader.close()
+        val jsonResponse = response.toString()
+        val jsonObject = JSONObject(jsonResponse)
+        val rates = jsonObject.getJSONObject("rates")
+        euroToDollar = rates.getDouble("USD")
     }
 
 }
