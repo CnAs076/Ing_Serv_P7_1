@@ -45,4 +45,9 @@ object RetrofitClient {
     val api: ExchangeRateApi by lazy {
         retrofit.create(ExchangeRateApi::class.java)
     }
+
+    data class ExchangeStatus(
+        val rate: Double,
+        val date: String
+    )
 }
