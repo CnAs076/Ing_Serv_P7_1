@@ -1,24 +1,20 @@
 package es.uniovi.converter
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
-import org.json.JSONObject
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.net.HttpURLConnection
-import java.net.URL
-
+import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 
 class MainActivity : AppCompatActivity() {
 
-    var euroToDollar: Double = 1.16       // Ratio por defecto
-    lateinit var editTextEuros: EditText  // Se inicializa después
+    private val viewModel: MainViewModel by viewModels()
+
+    lateinit var editTextEuros: EditText
     lateinit var editTextDollars: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,6 +30,9 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+
+        viewModel.fetchExchangeRate()
     }
 
     private fun convert(source: EditText, destination: EditText, factor: Double) {
@@ -48,30 +47,13 @@ class MainActivity : AppCompatActivity() {
 
     fun onClickToDollars(view: View) {
         Toast.makeText(this, "Conversión a dólares", Toast.LENGTH_SHORT).show()
-        convert(editTextEuros, editTextDollars, euroToDollar)
+
+        convert(editTextEuros, editTextDollars, viewModel.euroToDollar)
     }
 
     fun onClickToEuros(view: View) {
         Toast.makeText(this, "Conversión a euros", Toast.LENGTH_SHORT).show()
-        convert(editTextDollars, editTextEuros, 1 / euroToDollar)
-    }
 
-    private fun fetchExchangeRate() {
-        val url = URL("https://api.frankfurter.app/latest?from=EUR&to=USD")
-        val connection = url.openConnection() as HttpURLConnection
-        connection.requestMethod = "GET"
-        val inputStream = connection.inputStream
-        val reader = BufferedReader(InputStreamReader(inputStream))
-        val response = StringBuilder()
-        var line: String?
-        while (reader.readLine().also { line = it } != null) {
-            response.append(line)
-        }
-        reader.close()
-        val jsonResponse = response.toString()
-        val jsonObject = JSONObject(jsonResponse)
-        val rates = jsonObject.getJSONObject("rates")
-        euroToDollar = rates.getDouble("USD")
+        convert(editTextDollars, editTextEuros, 1 / viewModel.euroToDollar)
     }
-
 }

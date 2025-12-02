@@ -47,4 +47,11 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    // ViewModel y ViewModelScope
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.1")
+    // Activity KTX (necesaria para usar 'by viewModels()')
+    implementation("androidx.activity:activity-ktx:1.9.0")
+
+    // LiveData (opcional según el tutorial, pero es buena práctica tenerlo)
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.1")
 }
